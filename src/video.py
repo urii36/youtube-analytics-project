@@ -16,18 +16,26 @@ class Video:
         """
         Инициализация класса Video
         """
-        self.video_id = video_id
-        youtube = Channel.get_service().videos().list(
-            part = 'snippet, statistics', id = self.video_id
-        ).execute()
-        video_data = youtube.get('items')[0]
-        self.__title = video_data.get('snippet').get('title')
-        self.__url = f'https://www.youtube.com/watch?v{self.channel_id}'
-        self.__view_count = int(video_data.get('statistics').get('viewCount'))
-        self.__like_count = int(video_data.get('statistics').get('likeCount'))
+        try:
+            self.video_id = video_id
+            youtube = Channel.get_service().videos().list(
+                part='snippet,statistics', id=self.video_id
+            ).execute()
+            video_data = youtube.get('items')[0]
+            self.title = video_data.get('snippet').get('title')
+            self.url = f'https://www.youtube.com/watch?v={self.video_id}'
+            self.view_count = int(video_data.get('statistics').get('viewCount'))
+            self.like_count = int(video_data.get('statistics').get('likeCount'))
+        except (IndexError, KeyError):
+            self.title = None
+            self.url = None
+            self.view_count = None
+            self.like_count = None
 
     def __str__(self):
         return self.__title
+
+
 
     @property
     def video_id(self) -> str:
